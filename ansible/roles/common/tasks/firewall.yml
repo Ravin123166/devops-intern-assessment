@@ -1,0 +1,77 @@
+- name: Allow established and related connections
+  ansible.builtin.command: iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  register: established_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add established and related rule
+  ansible.builtin.command: iptables -I INPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  when: established_rule.rc != 0
+
+- name: Allow loopback traffic
+  ansible.builtin.command: iptables -C INPUT -i lo -j ACCEPT
+  register: loopback_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add loopback rule
+  ansible.builtin.command: iptables -I INPUT 2 -i lo -j ACCEPT
+  when: loopback_rule.rc != 0
+
+- name: Allow ICMP echo requests
+  ansible.builtin.command: iptables -C INPUT -p icmp --icmp-type echo-request -j ACCEPT
+  register: icmp_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add ICMP echo request rule
+  ansible.builtin.command: iptables -I INPUT -p icmp --icmp-type echo-request -j ACCEPT
+  when: icmp_rule.rc != 0
+
+- name: Allow established and related connections
+  ansible.builtin.command: iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  register: established_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add established and related firewall rule
+  ansible.builtin.command: iptables -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  when: established_rule.rc != 0
+
+- name: Allow SSH
+  ansible.builtin.command: iptables -C INPUT -p tcp --dport 22 -j ACCEPT
+  register: ssh_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add SSH firewall rule
+  ansible.builtin.command: iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+  when: ssh_rule.rc != 0
+
+- name: Allow HTTP
+  ansible.builtin.command: iptables -C INPUT -p tcp --dport 80 -j ACCEPT
+  register: http_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add HTTP firewall rule
+  ansible.builtin.command: iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+  when: http_rule.rc != 0
+
+- name: Allow HTTPS
+  ansible.builtin.command: iptables -C INPUT -p tcp --dport 443 -j ACCEPT
+  register: https_rule
+  failed_when: false
+  changed_when: false
+
+- name: Add HTTPS firewall rule
+  ansible.builtin.command: iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+  when: https_rule.rc != 0
+- name: Check default INPUT policy
+  ansible.builtin.command: iptables -L INPUT -n
+  register: input_policy
+  changed_when: false
+
+- name: Set default INPUT policy to DROP
+  ansible.builtin.command: iptables -P INPUT DROP
+  when: "'Chain INPUT (policy DROP)' not in input_policy.stdout"

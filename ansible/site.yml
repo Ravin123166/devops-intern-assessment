@@ -1,0 +1,8 @@
+---
+- name: Configure all assessment servers
+  hosts: all
+  become: true
+  roles:
+    - common
+    - ssh
+    - nginx

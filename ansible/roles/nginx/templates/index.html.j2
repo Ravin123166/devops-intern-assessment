@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Server: {{ inventory_hostname }}</h1>
+<p>Hostname: {{ ansible_facts["hostname"] }}</p>
+<p>Current time: <span id="time"></span></p>
+<script>
+function updateTime() {
+    document.getElementById("time").textContent = new Date().toISOString();
+}
+updateTime();
+setInterval(updateTime, 1000);
+</script>
+</body>
+</html>

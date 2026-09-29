@@ -1,0 +1,60 @@
+services:
+  vm1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vm1
+    hostname: vm1
+    restart: unless-stopped
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    networks:
+      devops_net:
+        ipv4_address: 172.20.0.10
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2221:22"
+
+  vm2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vm2
+    hostname: vm2
+    restart: unless-stopped
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    networks:
+      devops_net:
+        ipv4_address: 172.20.0.20
+    ports:
+      - "8082:80"
+      - "2222:22"
+
+  vm3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vm3
+    hostname: vm3
+    restart: unless-stopped
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    networks:
+      devops_net:
+        ipv4_address: 172.20.0.30
+    ports:
+      - "8083:80"
+      - "2223:22"
+
+networks:
+  devops_net:
+    external: true
+    name: devops_net

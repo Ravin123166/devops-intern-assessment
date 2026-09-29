@@ -1,0 +1,53 @@
+---
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Deploy dynamic webpage
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: "0644"
+
+
+- name: Deploy vm1 reverse proxy configuration
+  ansible.builtin.template:
+    src: vm1.conf.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "vm1"
+  notify: Reload Nginx
+
+- name: Create SSL directory on vm1
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: inventory_hostname == "vm1"
+
+- name: Generate self-signed SSL certificate on vm1
+  ansible.builtin.command:
+    cmd: >
+      openssl req -x509 -nodes -days 365
+      -newkey rsa:2048
+      -keyout /etc/nginx/ssl/vm1.key
+      -out /etc/nginx/ssl/vm1.crt
+      -subj "/CN=public.vm1.local"
+    creates: /etc/nginx/ssl/vm1.crt
+  when: inventory_hostname == "vm1"
+
+- name: Set SSL private key permissions
+  ansible.builtin.file:
+    path: /etc/nginx/ssl/vm1.key
+    owner: root
+    group: root
+    mode: "0600"
+  when: inventory_hostname == "vm1"

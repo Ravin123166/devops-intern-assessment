@@ -1,0 +1,13 @@
+---
+- name: Configure SSH security
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/99-assessment.conf
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PubkeyAuthentication yes
+      PermitRootLogin no
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart SSH

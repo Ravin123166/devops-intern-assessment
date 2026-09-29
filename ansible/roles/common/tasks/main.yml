@@ -1,0 +1,12 @@
+---
+- name: Install common required packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+      - docker.io
+      - iputils-ping
+    state: present
+    update_cache: true
+
+- import_tasks: firewall.yml
